@@ -32,7 +32,7 @@ router.get('/', (req, res) => {
 
 // Get single idea
 router.get('/:id', (req, res) => {
-    const idea = ideas.find((idea) => (idea.id == req.params.id));
+    const idea = ideas.find((idea) => (idea.id === +req.params.id));
     
     if (!idea) {
         return res.status(404).json({ success: false, error: 'Resource not found'});
@@ -52,10 +52,36 @@ router.post('/', (req, res) => {
     };
     
     ideas.push(idea);
-    
+
     res.json({ success: true, data: idea});
 });
 
+// Update an idea
+router.put('/:id', (req, res) => {
+    const idea = ideas.find((idea) => (idea.id === +req.params.id));
+    
+    if (!idea) {
+        return res.status(404).json({ success: false, error: 'Resource not found'});
+    }
+    
+    idea.text = req.body.text || idea.text;
+    idea.tag = req.body.tag || idea.tag;
+    idea.date = new Date().toISOString().slice(0, 10);
 
+    res.json({ success: true, data: idea });
+});
+
+// Delete an idea
+router.delete('/:id', (req, res) => {
+    const index = ideas.findIndex((idea) => (idea.id === +req.params.id));
+    
+    if (index === -1) {
+        return res.status(404).json({ success: false, error: 'Resource not found'});
+    }
+    
+    const idea = ideas.splice(index, 1);
+
+    res.json({ success: true, data: idea[0] });
+});
 
 module.exports = router;
