@@ -1,14 +1,17 @@
+import ideasApi from "../services/ideasApi";
+import IdeaList from "./IdeaList";
+
 class IdeaForm {
     constructor() {
         this._formModal = document.querySelector('#form-modal');
-        
+        this._ideaList = new IdeaList();
     }
 
     addEventListeners() {
         this._form.addEventListener('submit', this.handleSubmit.bind(this));
     }
 
-    handleSubmit(event) {
+    async handleSubmit(event) {
         event.preventDefault();
         
         const idea = {
@@ -17,7 +20,11 @@ class IdeaForm {
             tag: this._form.elements.tag.value,
         };
 
-        console.log(idea);
+        // Add idea to server
+        const newIdea = await ideasApi.createIdea(idea);
+
+        // Add idea to list
+        this._ideaList.addIdea2List(newIdea.data.data);
 
         // Clear fields
         this._form.elements.username.value = '';
